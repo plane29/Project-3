@@ -206,6 +206,7 @@ public class Pong extends JPanel implements KeyListener{
 	{
 	    while(true){
 		world.updateSpheres(1.0 / (double)FPS);
+        world.updateRectangles(1.0/ (double)FPS);
 		repaint();
 		try{
 		    Thread.sleep(1000/FPS);
@@ -222,11 +223,13 @@ public class Pong extends JPanel implements KeyListener{
         char c=e.getKeyChar();
 	System.out.println("You pressed down: " + c);
 
-	if(c=='a' || c== 'd' || c== 's' || c== 'w'){ //if the key pressed was one of these
-		changeGravity(c, world); //call this method to change the gravity
-	}
+
+
+	if(c=='r' || c== 'u' || c== 'v' || c== 'n' || c=='f' || c=='j'){ //if the key pressed was one of these
+		changeVelocity(c, world); //call this method to change the velocity of the rectangle
 
     }
+}
     public void keyReleased(KeyEvent e) {
         char c=e.getKeyChar();
 	System.out.println("\tYou let go of: " + c);
@@ -275,40 +278,48 @@ public class Pong extends JPanel implements KeyListener{
 
     }
 
-    public void changeGravity(char c, World w){
-    	char wasd = c;
-    	Pair gravity = new Pair(0,0);
+    public void changeVelocity(char c, World w){
+    	char keyPressed = c;
+       	Pair velocityup = new Pair(0,-100);
+        Pair velocitydown = new Pair(0,100);
+        Pair velocitystop = new Pair(0,0);
     	
-    	switch(wasd){ //uses a switch with different cases to change gravity based upon which key is pressed
-    		case 'w': //if w is pressed change gravity to the top of the screen
-    		gravity.x=0;
-    		gravity.y=-200;
+    	switch(keyPressed){ //uses a switch with different cases to change gravity based upon which key is pressed
+    		case 'r': //if w is pressed change gravity to the top of the screen
+    		w.rectangles[0].velocity=velocityup;
+
             break;
 
-    		case 'a':  //if a is pressed change gravity to the left of the screen
-    		gravity.x=-200;
-    		gravity.y=0;
+    		case 'f':  //if a is pressed change gravity to the left of the screen
+    		w.rectangles[0].velocity=velocitystop;
             break;
 
-    		case 's': //if s is pressed change gravity to the right of the screen
-    		gravity.x=0;
-    		gravity.y=200;
+    		case 'j': //if s is pressed change gravity to the right of the screen
+    		w.rectangles[1].velocity=velocitystop;
     		break;
 
-    		case 'd': //if d is pressed change gravity to how we usually think of it, the bottom of the screen
-    		gravity.x=200;
-    		gravity.y=0;
+    		case 'u': //if d is pressed change gravity to how we usually think of it, the bottom of the screen
+    		w.rectangles[1].velocity=velocityup;
+            break;
+            
+            case 'v': //if d is pressed change gravity to how we usually think of it, the bottom of the screen
+            w.rectangles[0].setVelocity(velocitydown);
+            break;
+
+            case 'n': //if d is pressed change gravity to how we usually think of it, the bottom of the screen
+            w.rectangles[1].velocity=velocitydown;
+
     		break;
     	}
 
-    	changeGravityHelper(gravity, w);//the swithc just changes the value of a pair so need to actually change gravity 
+    	//changeGravityHelper(velocity, w, paddle);//the swithc just changes the value of a pair so need to actually change gravity 
     }
 
-    public void changeGravityHelper(Pair p, World w){ //changes the gravity of all of the spheres
+    /*public void changeGravityHelper(Pair p, World w){ //changes the gravity of all of the spheres
     	for(int i=0; i<w.numSpheres; i++){ //for all of the spheres
     			w.spheres[i].setAcceleration(p); //change gravity to what we sent in
     		}
-    }
+    }*/
 
     
 }
