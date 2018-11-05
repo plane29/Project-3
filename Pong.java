@@ -47,8 +47,7 @@ class Sphere{
     {
 	Random rand = new Random(); 
 	position = new Pair(500.0, 500.0);
-    velocity = new Pair(1000.0,0.0);
-	//velocity = new Pair((double)(rand.nextInt(1000) - 500), (double)(rand.nextInt(1000) - 500));
+	velocity = new Pair((double)(rand.nextInt(1000) - 500), (double)(rand.nextInt(1000) - 500));
 	acceleration = new Pair(0.0, 0.0);
 	radius = 25;
 	dampening = 1.3;
@@ -72,7 +71,7 @@ class Sphere{
     public void draw(Graphics g){
 	Color c = g.getColor();
 	
-	g.setColor(color);
+	g.setColor(Color.WHITE);
 	g.drawOval((int)(position.x - radius), (int)(position.y - radius), (int)(2*radius), (int)(2*radius));
 	g.setColor(c);
     }
@@ -83,12 +82,15 @@ class Sphere{
 	    position.x = radius;
 	    bounced = true;
 	}
-	else if (position.x + radius > w.width){
+	else if (position.x + radius > w.width){  //NOTE CURRENTLY WE HAVE A PROBLEM WHEN THE BALL HITS THE WALL AND THEN WE GO OVER IT NEED TO FIX THIS HAS TO DO WITH SWITHCING VELOICITy
 	    velocity.flipX();
 	    position.x = w.width - radius;
 	    bounced = true;
 	}
-    else if ((position.x - radius<= w.rectangles[0].position.x + w.rectangles[0].width/2) /*&& vvffposition.y - w.rectangles[0].height <= w.rectangles[0].position.y && position.y >= w.rectangles[0].position.y*/){
+    else if ((position.x - radius<= w.rectangles[0].position.x + w.rectangles[0].width/2) && position.y + radius >= w.rectangles[0].position.y - w.rectangles[0].height/2 && position.y -radius <= w.rectangles[0].position.y + w.rectangles[0].height/2){
+        velocity.flipX();
+    }
+    else if ((position.x + radius>= w.rectangles[1].position.x - w.rectangles[0].width/2) && position.y + radius >= w.rectangles[1].position.y - w.rectangles[0].height/2 && position.y -radius <= w.rectangles[1].position.y + w.rectangles[0].height/2){
         velocity.flipX();
     }
 	if (position.y - radius < 0){
@@ -141,8 +143,8 @@ class Rectangle{
     Color c = g.getColor();
     
     g.setColor(color);
-    g.drawRect((int)(position.x - width/2), (int)(position.y - height/2), (int)(width),(int)(height));
-    System.out.println(position.x + " " + position.y);
+    g.fillRect((int)(position.x - width/2), (int)(position.y - height/2), (int)(width),(int)(height));
+    //System.out.println(position.x + " " + position.y);
     g.setColor(c);
     }
 }
