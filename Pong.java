@@ -47,8 +47,9 @@ class Sphere{
     {
 	Random rand = new Random(); 
 	position = new Pair(500.0, 500.0);
-	velocity = new Pair((double)(rand.nextInt(1000) - 500), (double)(rand.nextInt(1000) - 500));
-	acceleration = new Pair(0.0, 200.0);
+    velocity = new Pair(1000.0,0.0);
+	//velocity = new Pair((double)(rand.nextInt(1000) - 500), (double)(rand.nextInt(1000) - 500));
+	acceleration = new Pair(0.0, 0.0);
 	radius = 25;
 	dampening = 1.3;
 	color = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
@@ -87,6 +88,9 @@ class Sphere{
 	    position.x = w.width - radius;
 	    bounced = true;
 	}
+    else if ((position.x - radius<= w.rectangles[0].position.x + w.rectangles[0].width/2) /*&& vvffposition.y - w.rectangles[0].height <= w.rectangles[0].position.y && position.y >= w.rectangles[0].position.y*/){
+        velocity.flipX();
+    }
 	if (position.y - radius < 0){
 	    velocity.flipY();
 	    position.y = radius;
@@ -116,7 +120,6 @@ class Rectangle{
         velocity = new Pair(0,0);
         height = 100;
         width = 20;
-        position.y += height/2;
         color = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
     }
     public void update(World w, double time){
@@ -138,7 +141,8 @@ class Rectangle{
     Color c = g.getColor();
     
     g.setColor(color);
-    g.drawRect((int)(position.x - width), (int)(position.y - height), (int)width,(int) height);
+    g.drawRect((int)(position.x - width/2), (int)(position.y - height/2), (int)(width),(int)(height));
+    System.out.println(position.x + " " + position.y);
     g.setColor(c);
     }
 }
@@ -249,7 +253,7 @@ public class Pong extends JPanel implements KeyListener{
     public Pong(){
     Pair[] initialPosition = new Pair[2];
     initialPosition[0]= new Pair(30.0,HEIGHT/2);
-    initialPosition[1]= new Pair(WIDTH-10,HEIGHT/2);
+    initialPosition[1]= new Pair(WIDTH-30,HEIGHT/2);
 	world = new World(WIDTH, HEIGHT, 1, initialPosition);
 	addKeyListener(this);
 	this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
