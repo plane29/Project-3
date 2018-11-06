@@ -9,10 +9,12 @@ import java.awt.event.KeyEvent;
 class Pair{
     public double x;
     public double y;
+    public double magnitude;
     
     public Pair(double initX, double initY){
 	x = initX;
 	y = initY;
+    magnitude = Math.pow(Math.pow(x,2)+Math.pow(y,2),.5);
     }
 
     public Pair add(Pair toAdd){
@@ -47,10 +49,11 @@ class Sphere{
     {
 	Random rand = new Random(); 
 	position = new Pair(500.0, 500.0);
-	velocity = new Pair((double)(rand.nextInt(1000) - 500), (double)(rand.nextInt(1000) - 500));
+    velocity= new Pair (500.0, 0.0);
+	//velocity = new Pair((double)(rand.nextInt(1000) - 500), (double)(rand.nextInt(1000) - 500));
 	acceleration = new Pair(0.0, 0.0);
 	radius = 25;
-	dampening = 1.3;
+	dampening = 1;
 	color = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
     }
     public void update(World w, double time){
@@ -77,6 +80,7 @@ class Sphere{
     }
     private void bounce(World w){
 	Boolean bounced = false;
+    double angle;
 	if (position.x - radius < 0){
 	    velocity.flipX();
 	    position.x = radius;
@@ -88,10 +92,45 @@ class Sphere{
 	    bounced = true;
 	}
     else if ((position.x - radius<= w.rectangles[0].position.x + w.rectangles[0].width/2) && position.y + radius >= w.rectangles[0].position.y - w.rectangles[0].height/2 && position.y -radius <= w.rectangles[0].position.y + w.rectangles[0].height/2){
-        velocity.flipX();
+        if (position.y == w.rectangles[0].position.y){  //TESTING PURPOSES|| position.y -10 <= w.rectangles[0].position.y){
+            velocity.x = velocity.magnitude;
+            velocity.y = 0;
+        }
+        else if (position.y <= w.rectangles[0].position.y - w.rectangles[0].height/2){
+            velocity.x = Math.cos(-1.309)*velocity.magnitude;
+            velocity.y = Math.sin(-1.309)*velocity.magnitude;
+        }
+        else if (position.y >= w.rectangles[0].position.y + w.rectangles[0].height/2){
+            velocity.x = Math.cos(1.309)*velocity.magnitude;
+            velocity.y = Math.sin(1.309)*velocity.magnitude;
+        }
+        else{
+            angle = ((position.y - w.rectangles[0].position.y)/(w.rectangles[0].height/2))*1.309;
+            velocity.x = Math.cos(angle)*velocity.magnitude;
+            velocity.y = Math.sin(angle)*velocity.magnitude;
+
+        }
+
     }
-    else if ((position.x + radius>= w.rectangles[1].position.x - w.rectangles[0].width/2) && position.y + radius >= w.rectangles[1].position.y - w.rectangles[0].height/2 && position.y -radius <= w.rectangles[1].position.y + w.rectangles[0].height/2){
-        velocity.flipX();
+    else if ((position.x + radius>= w.rectangles[1].position.x - w.rectangles[1].width/2) && position.y + radius >= w.rectangles[1].position.y - w.rectangles[1].height/2 && position.y -radius <= w.rectangles[1].position.y + w.rectangles[1].height/2){
+        if (position.y == w.rectangles[1].position.y){ //|| position.y -10 <= w.rectangles[0].position.y){
+            velocity.x = -velocity.magnitude;
+            velocity.y = 0;
+        }
+        else if (position.y <= w.rectangles[1].position.y - w.rectangles[1].height/2){
+            velocity.x = -1*Math.cos(-1.309)*velocity.magnitude;
+            velocity.y = Math.sin(-1.309)*velocity.magnitude;
+        }
+        else if (position.y >= w.rectangles[1].position.y + w.rectangles[1].height/2){
+            velocity.x = -1*Math.cos(1.309)*velocity.magnitude;
+            velocity.y = Math.sin(1.309)*velocity.magnitude;
+        }
+        else{
+            angle = ((position.y - w.rectangles[1].position.y)/(w.rectangles[1].height/2))*1.309;
+            velocity.x = -1*Math.cos(angle)*velocity.magnitude;
+            velocity.y = Math.sin(angle)*velocity.magnitude;
+
+        }
     }
 	if (position.y - radius < 0){
 	    velocity.flipY();
