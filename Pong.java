@@ -6,6 +6,7 @@ import java.awt.Dimension;
 import java.util.Random;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
+import java.awt.Font;
 class Pair{
     public double x;
     public double y;
@@ -45,12 +46,15 @@ class Sphere{
     double radius;
     double dampening;
     Color color;
-    public Sphere()
+    Pair midpoint;
+    public Sphere(int width, int height)
     {
+
 	Random rand = new Random(); 
-	position = new Pair(500.0, 500.0);
-    velocity= new Pair (500.0, 0.0);
-	//velocity = new Pair((double)(rand.nextInt(1000) - 500), (double)(rand.nextInt(1000) - 500));
+    midpoint = new Pair((double)(width/2), (double)(height/2));
+	position = midpoint;
+    //velocity= new Pair (500.0, 0.0);
+	velocity = new Pair((double)(rand.nextInt(3000) - 1500), 0);
 	acceleration = new Pair(0.0, 0.0);
 	radius = 25;
 	dampening = 1;
@@ -79,17 +83,24 @@ class Sphere{
 	g.setColor(c);
     }
     private void bounce(World w){
+    Random rand = new Random();
 	Boolean bounced = false;
     double angle;
 	if (position.x - radius < 0){
-	    velocity.flipX();
-	    position.x = radius;
+	    //velocity.flipX();
+	    //position.x = radius;
 	    bounced = true;
+        w.score[1]++;
+        position = midpoint;
+        velocity = new Pair((double)(-1*(rand.nextInt(1500))), 0);
 	}
 	else if (position.x + radius > w.width){  //NOTE CURRENTLY WE HAVE A PROBLEM WHEN THE BALL HITS THE WALL AND THEN WE GO OVER IT NEED TO FIX THIS HAS TO DO WITH SWITHCING VELOICITy
-	    velocity.flipX();
-	    position.x = w.width - radius;
+	    //velocity.flipX();
+	    //position.x = w.width - radius;
 	    bounced = true;
+        w.score[0]++;
+        position = midpoint;
+        velocity = new Pair((double)(rand.nextInt(1500)), 0);
 	}
     else if ((position.x - radius<= w.rectangles[0].position.x + w.rectangles[0].width/2) && position.y + radius >= w.rectangles[0].position.y - w.rectangles[0].height/2 && position.y -radius <= w.rectangles[0].position.y + w.rectangles[0].height/2){
         if (position.y == w.rectangles[0].position.y){  //TESTING PURPOSES|| position.y -10 <= w.rectangles[0].position.y){
@@ -159,14 +170,15 @@ class Rectangle{
         Random rand = new Random();
         position = inPosition;
         velocity = new Pair(0,0);
-        height = 100;
+        height = 150;
         width = 20;
         color = new Color(rand.nextFloat(), rand.nextFloat(), rand.nextFloat());
     }
     public void update(World w, double time){
+    if(!((position.y-(height/2) <=0) && velocity.y<0) && !(position.y+(height/2)>=w.height && velocity.y>0) ){
     position = position.add(velocity.times(time));
     //velocity = velocity.add(acceleration.times(time));
-    //bounce(w);
+    }
     }
     
     public void setPosition(Pair p){
@@ -186,7 +198,9 @@ class Rectangle{
     //System.out.println(position.x + " " + position.y);
     g.setColor(c);
     }
+
 }
+
 
 class World{
     int height;
@@ -195,11 +209,14 @@ class World{
     int numSpheres;
     Sphere spheres[];
     Rectangle rectangles[];
+    int[]score;
 
     public World(int initWidth, int initHeight, int initNumSpheres, Pair[] initialPosition){
 	width = initWidth;
 	height = initHeight;
-
+    score = new int[2];
+    score[0] = 0;
+    score[1] = 0;
 	numSpheres = initNumSpheres;
 	spheres  = new Sphere[numSpheres];
     rectangles = new Rectangle[2];
@@ -210,9 +227,17 @@ class World{
 
 	for (int i = 0; i < numSpheres; i ++)
 	    {
-		spheres[i] = new Sphere();
+		spheres[i] = new Sphere(width,height);
 	    }
 
+    }
+
+    public void drawScore(Graphics g){
+        g.setFont(new Font("Arial", Font.PLAIN, 60));
+        g.setColor(Color.WHITE);
+        for(int i =0; i < 2; i++){
+            g.drawString(Integer.toString(score[i]),(width/4) + (width/2)*i -30, 90);
+        }
     }
 
     public void drawSpheres(Graphics g){
@@ -317,16 +342,16 @@ public class Pong extends JPanel implements KeyListener{
 
 	g.setColor(Color.BLACK);
 	g.fillRect(0, 0, WIDTH, HEIGHT);
-
 	world.drawSpheres(g);
     world.drawRectangles(g);
+    world.drawScore(g);
 
     }
 
     public void changeVelocity(char c, World w){
     	char keyPressed = c;
-       	Pair velocityup = new Pair(0,-100);
-        Pair velocitydown = new Pair(0,100);
+       	Pair velocityup = new Pair(0,-200);
+        Pair velocitydown = new Pair(0,200);
         Pair velocitystop = new Pair(0,0);
     	
     	switch(keyPressed){ //uses a switch with different cases to change gravity based upon which key is pressed
