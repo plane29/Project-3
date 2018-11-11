@@ -215,7 +215,7 @@ class Rectangle{
 class World{
     int height;
     int width;
-    
+    Font arial = new Font("Arial", Font.PLAIN, 60);
     int numSpheres;
     Sphere spheres[];
     Rectangle rectangles[];
@@ -243,7 +243,7 @@ class World{
     }
 
     public void drawScore(Graphics g){
-        g.setFont(new Font("Arial", Font.PLAIN, 60));
+        g.setFont(arial);
         g.setColor(Color.WHITE);
         for(int i =0; i < 2; i++){
             g.drawString(Integer.toString(score[i]),(width/4) + (width/2)*i -30, 90);
